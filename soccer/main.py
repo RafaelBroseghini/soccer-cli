@@ -114,6 +114,8 @@ def list_team_codes():
               help="Shows players for a particular team.")
 @click.option('--team', type=click.Choice(TEAM_NAMES.keys()),
               help=("Choose a particular team's fixtures."))
+@click.option('--info', is_flag=True,
+              help=("Reveal a particular team's information when used with --team command."))
 @click.option('--lookup', is_flag=True,
               help="Get full team name from team code when used with --team command.")
 @click.option('--time', default=6,
@@ -131,7 +133,7 @@ def list_team_codes():
 @click.option('-o', '--output-file', default=None,
               help="Save output to a file (only if csv or json option is provided).")
 def main(league, time, standings, team, live, use12hour, players,
-         output_format, output_file, upcoming, lookup, listcodes, apikey):
+         output_format, output_file, upcoming, lookup, info, listcodes, apikey):
     """
     A CLI for live and past football scores from various football leagues.
 
@@ -182,13 +184,15 @@ def main(league, time, standings, team, live, use12hour, players,
             if lookup:
                 map_team_id(team)
                 return
+            if info:
+                rh.get_team_info(team)
+                return
             if players:
                 rh.get_team_players(team)
                 return
             else:
                 rh.get_team_scores(team, time, upcoming, use12hour)
-                return
-
+                
         rh.get_league_scores(league, time, upcoming, use12hour)
     except IncorrectParametersException as e:
         click.secho(str(e), fg="red", bold=True)

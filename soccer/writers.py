@@ -7,6 +7,7 @@ import io
 from abc import ABCMeta, abstractmethod
 from itertools import groupby
 from collections import namedtuple
+from random import choice
 
 from soccer import leagueids, leagueproperties
 
@@ -101,6 +102,39 @@ class Stdout(BaseWriter):
                u" {dateOfBirth:<18}")
         for player in players:
             click.secho(fmt.format(**player), bold=True)
+
+    def team_info(self, team):
+        """Prints the team info in a pretty format with customized team color"""
+        TEAM_ATTRS = dict(
+            Team         = "name", 
+            Initials     = "tla", 
+            Country      = "area",
+            Founded      = "founded",
+            Venue        = "venue",
+            Competitions = "activeCompetitions",
+            Colors       = "clubColors",
+            WWW          = "website",
+            Crest_URL    = "crestUrl",
+            Phone_Number = "phone",
+            Email        = "email",
+            Address      = "address",
+            Last_Updated = "lastUpdated"
+        )
+         
+        for attr in TEAM_ATTRS:
+            if attr == "Country":
+                click.secho(f"{attr}: {team[TEAM_ATTRS[attr]]['name'] }\n", 
+                            bold=True, fg=self.colors.MISC)
+            elif attr == "Competitions":
+                click.secho(f"{attr}: ", bold=True, fg=self.colors.MISC)
+
+                for cp in team[TEAM_ATTRS[attr]]:
+                    click.secho(f"\t{cp['name']}: {cp['area']['name']}", 
+                                bold=True, fg=self.colors.MISC)
+                print()
+            else:
+                click.secho(f"{attr}: {team[TEAM_ATTRS[attr]]}\n", 
+                            bold=True, fg=self.colors.MISC)
 
     def standings(self, league_table, league):
         """ Prints the league standings in a pretty way """

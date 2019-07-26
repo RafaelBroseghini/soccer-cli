@@ -139,3 +139,20 @@ class RequestHandler(object):
         except APIErrorException:
             click.secho("No data for the team. Please check the team code.",
                         fg="red", bold=True)
+
+    def get_team_info(self, team):
+        """
+        Queries the API and fetches information
+        for a particular team
+        """
+        team_id = self.team_names.get(team, None)
+        try:
+            req = self._get('teams/{}/'.format(team_id))
+            team_info = req.json()
+            if not team_info:
+                click.secho("No info found for this team", fg="red", bold=True)
+            else:
+                self.writer.team_info(team_info)
+        except APIErrorException:
+            click.secho("No data for the team. Please check the team code.",
+                        fg="red", bold=True)
