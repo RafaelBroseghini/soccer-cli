@@ -4,12 +4,12 @@ sys.path.append('soccer')
 import json
 import requests
 import unittest
-import leagueids
 import mock
 from mock_response import MockResponse
 from soccer.exceptions import APIErrorException
-from request_handler import RequestHandler
+from soccer.request_handler import RequestHandler
 from soccer.writers import get_writer
+from soccer.leagueids import LEAGUE_IDS
 
 
 def mocked_requests_get(*args, **kwargs):
@@ -34,7 +34,6 @@ class TestRequestHandler(unittest.TestCase):
         headers = {'X-Auth-Token': dummy_key}
         TEAM_DATA = get_team_data()["teams"]
         TEAM_NAMES = {team["code"]: team["id"] for team in TEAM_DATA}
-        LEAGUE_IDS = leagueids.LEAGUE_IDS
         self.dummy_url = "http://some_url"
         writer = get_writer()
         self.rq = RequestHandler(headers, LEAGUE_IDS, TEAM_NAMES, writer)
