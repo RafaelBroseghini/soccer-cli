@@ -9,8 +9,10 @@ from soccer.exceptions import IncorrectParametersException
 from soccer.writers import get_writer
 from soccer.request_handler import RequestHandler
 
+from soccer.misc import get_team_color
 
-def load_json(file):
+
+def load_json(file: str) -> dict:
     """Load JSON file at app start"""
     here = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(here, file)) as jfile:
@@ -23,7 +25,7 @@ TEAM_DATA = load_json("teams.json")["teams"]
 TEAM_NAMES = {team["code"]: team["id"] for team in TEAM_DATA}
 
 
-def get_input_key():
+def get_input_key() -> str:
     """Input API key and validate"""
     click.secho("No API key found!", fg="yellow", bold=True)
     click.secho("Please visit {} and get an API token.".format(RequestHandler.BASE_URL),
@@ -44,7 +46,7 @@ def get_input_key():
     return confkey
 
 
-def load_config_key():
+def load_config_key() -> str:
     """Load API key from config file, write if needed"""
     global api_token
     try:
@@ -72,7 +74,7 @@ def load_config_key():
     return api_token
 
 
-def map_team_id(code):
+def map_team_id(code: str) -> None:
     """Take in team ID, read JSON file to map ID to name"""
     for team in TEAM_DATA:
         if team["code"] == code:
@@ -82,7 +84,7 @@ def map_team_id(code):
         click.secho("No team found for this code", fg="red", bold=True)
 
 
-def list_team_codes():
+def list_team_codes() -> None:
     """List team names in alphabetical order of team ID, per league."""
     # Sort teams by league, then alphabetical by code
     cleanlist = sorted(TEAM_DATA, key=lambda k: (k["league"]["name"], k["code"]))
@@ -192,7 +194,8 @@ def main(league, time, standings, team, live, use12hour, players,
                 return
             else:
                 rh.get_team_scores(team, time, upcoming, use12hour)
-                
+                return
+
         rh.get_league_scores(league, time, upcoming, use12hour)
     except IncorrectParametersException as e:
         click.secho(str(e), fg="red", bold=True)
