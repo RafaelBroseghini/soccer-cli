@@ -8,13 +8,13 @@ class RequestHandler(object):
     BASE_URL = 'http://api.football-data.org/v2/'
     LIVE_URL = 'http://soccer-cli.appspot.com/'
 
-    def __init__(self, headers, league_ids, team_names, writer):
+    def __init__(self, headers: dict, league_ids: dict, team_names: list, writer):
         self.headers = headers
         self.league_ids = league_ids
         self.team_names = team_names
         self.writer = writer
 
-    def _get(self, url):
+    def _get(self, url: str) -> requests.Request:
         """Handles api.football-data.org requests"""
         req = requests.get(RequestHandler.BASE_URL + url, headers=self.headers)
         status_code = req.status_code
@@ -29,7 +29,7 @@ class RequestHandler(object):
         elif status_code == requests.codes.too_many_requests:
             raise APIErrorException('You have exceeded your allowed requests per minute/day')
 
-    def get_live_scores(self, use_12_hour_format):
+    def get_live_scores(self, use_12_hour_format: bool) -> None:
         """Gets the live scores"""
         req = requests.get(RequestHandler.LIVE_URL)
         if req.status_code == requests.codes.ok:
@@ -53,7 +53,8 @@ class RequestHandler(object):
         else:
             click.secho("There was problem getting live scores", fg="red", bold=True)
 
-    def get_team_scores(self, team, time, show_upcoming, use_12_hour_format):
+    def get_team_scores(self, team: str, time: int, show_upcoming: bool, 
+                        use_12_hour_format: bool) -> None:
         """Queries the API and gets the particular team scores"""
         team_id = self.team_names.get(team, None)
         time_frame = 'n' if show_upcoming else 'p'
@@ -74,7 +75,7 @@ class RequestHandler(object):
             click.secho("Team code is not correct.",
                         fg="red", bold=True)
 
-    def get_standings(self, league):
+    def get_standings(self, league: str) -> None:
         """Queries the API and gets the standings for a particular league"""
         league_id = self.league_ids[league]
         try:
@@ -87,7 +88,8 @@ class RequestHandler(object):
             click.secho("No standings availble for {league}.".format(league=league),
                         fg="red", bold=True)
 
-    def get_league_scores(self, league, time, show_upcoming, use_12_hour_format):
+    def get_league_scores(self, league: str, time: int, show_upcoming: bool, 
+                          use_12_hour_format: bool) -> None:
 
         """
         Queries the API and fetches the scores for fixtures
@@ -123,7 +125,7 @@ class RequestHandler(object):
             except APIErrorException:
                 click.secho("No data available.", fg="red", bold=True)
 
-    def get_team_players(self, team):
+    def get_team_players(self, team: str) -> None:
         """
         Queries the API and fetches the players
         for a particular team
@@ -140,7 +142,7 @@ class RequestHandler(object):
             click.secho("No data for the team. Please check the team code.",
                         fg="red", bold=True)
 
-    def get_team_info(self, team):
+    def get_team_info(self, team: str) -> None:
         """
         Queries the API and fetches information
         for a particular team
